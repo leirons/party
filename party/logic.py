@@ -28,7 +28,6 @@ async def delete_party(party_name: str, db: Session):
 async def check_number_of_created_parties(db: Session):
     pass
 
-
 async def join_to_the_party(owner_id: int, id: int, db: Session):
     try:
         party = models.PartyParcipants(party_id=id, owner_id=owner_id)
