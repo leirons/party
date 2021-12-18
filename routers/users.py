@@ -46,14 +46,13 @@ def create_user(user: schemes.UserCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/user/{user_id}", response_model=schemes.User, tags=["User"])
-def get_user(user_id: int, db: Session = Depends(get_db)):
+def get_user(user_id: int = Path(...,title="Id of user"), db: Session = Depends(get_db)):
     """
     Function get user by id
     :param user_id:
     :param db:
     :return:
     """
-    print(user_id)
     db_user = logic.get_user_by_id(db, user_id=user_id)
     if not db_user:
         raise HTTPException(status_code=400, detail="User does not exists")
@@ -88,6 +87,6 @@ def get_all_user(skip: int = 0, limit: int = 100, db=Depends(get_db)):
     return db_user
 
 
-@router.get("users/{name_of_party}")
+@router.get("users/{name_of_party}",tags=["User"])
 def get_parties_of_user():
     pass
