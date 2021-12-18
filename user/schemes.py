@@ -1,13 +1,13 @@
 from pydantic import BaseModel,validator,ValidationError
 from .validation import validate_email,if_have_symbols
 
+
 class UserBase(BaseModel):
     email: str
 
     @validator("email")
     def validate_email(cls, email):
         if validate_email(email):
-            print(validate_email(email))
             return email
         return ValidationError("Email does not correct")
 
@@ -19,6 +19,8 @@ class UserCreate(UserBase):
     @validator("login")
     def validate_login(cls, login):
         if not if_have_symbols(login):
+            if len(login) > 30:
+                return ValidationError("Login should not have more then 30 symbols ")
             return login
         return ValidationError("Login has symbols")
 
