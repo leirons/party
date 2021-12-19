@@ -12,8 +12,9 @@ class User(Base):
     country = Column(String,index=True)
     city = Column(String,index=True)
     hash_password = Column(String)
+    number_of_creatied_parties = Column(Integer,default=0)
 
-    parties = relationship(Party,back_populates="owner")
+    party = relationship(Party,back_populates="owner")
 
 
 

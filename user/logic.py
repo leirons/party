@@ -30,6 +30,8 @@ def create_user(password:str,db: Session,user: schemes.UserCreate):
     return db_user
 
 
+
+
 def get_all_users(db:Session):
     db_user = db.query(models.User).all()
     return db_user

@@ -39,6 +39,8 @@ class UserToken(BaseModel):
     @validator("login")
     def validate_login(cls, login):
         if not if_have_symbols(login):
+            if len(login) > 30:
+                return ValidationError("Login should not have more then 30 symbols ")
             return login
         return ValidationError("Login has symbols")
 

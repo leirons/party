@@ -5,7 +5,7 @@ from typing import Optional, List
 from fastapi import Depends, FastAPI, HTTPException
 
 from user import schemes, logic, models
-from core.db import SessionLocal, engine
+from core.db import SessionLocal, engine,get_db
 from user.logic import *
 
 from core.auth import AuthHandler
@@ -16,18 +16,10 @@ auth_handler = AuthHandler()
 router = APIRouter()
 
 
+
+
 # TODO - Добавить токены к каждому endpoint
 
-def get_db() -> SessionLocal:
-    """
-    Get db to create session
-    :return Session:
-    """
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @router.post("/users/", response_model=schemes.User, tags=['User'])
@@ -68,7 +60,7 @@ def login(user: schemes.UserToken, db: Session = Depends(get_db)):
     """
     user_old = logic.get_user_by_login(db, user.login)
 
-    if not user_old.email == user.login:
+    if not user_old.login == user.login:
         return HTTPException(status_code=400, detail="Does not correct login")
     if auth_handler.verify_password(user.password, user_old.hash_password):
         token = auth_handler.encode_token(user_old.login, age=18)
@@ -90,3 +82,4 @@ def get_all_user(skip: int = 0, limit: int = 100, db=Depends(get_db)):
 @router.get("users/{name_of_party}",tags=["User"])
 def get_parties_of_user():
     pass
+

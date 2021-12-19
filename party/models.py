@@ -4,6 +4,13 @@ from sqlalchemy.orm import relationship
 from core.db import Base
 
 
+
+class PartyParcipants(Base):
+    __tablename__ = "party_owner"
+    id = Column(Integer,index=True,primary_key=True)
+    party_id = Column(Integer,ForeignKey("party.id"))
+    party_parcipants = relationship("Party",back_populates="party")
+
 class Party(Base):
     __tablename__ = "party"
     id = Column(Integer, primary_key=True, index=True)
@@ -18,11 +25,6 @@ class Party(Base):
     owner_id = Column(Integer, ForeignKey("users.id"))
 
     owner = relationship("User", back_populates='party')
-    party = relationship("PartyParcipants",back_populates="parcipants")
 
+    party = relationship(PartyParcipants,back_populates="party_parcipants")
 
-class PartyParcipants(Base):
-    __tablename__ = "party_parcipants"
-    id = Column(Integer,index=True,primary_key=True)
-    party_id = Column(Integer,ForeignKey("party.id"))
-    party_owner = relationship("Party",back_populates="party_parcipants")
