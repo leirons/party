@@ -18,7 +18,7 @@ class AuthHandler():
 
     def encode_token(self, user_id, age):
         payload = {
-            "exp": datetime.utcnow() + timedelta(days=0, minutes=5),
+            "exp": datetime.utcnow() + timedelta(days=1, minutes=1),
             "iat": datetime.utcnow(),
             'sub': user_id,
             "age": age,
@@ -39,6 +39,8 @@ class AuthHandler():
             return HTTPException(status_code=401, detail="Token is invalid")
 
     def auth_wrapper(self, auth: HTTPAuthorizationCredentials = Security(security)):
+        print(auth.credentials)
+        print(auth,"sds")
         return self.decode_token(auth.credentials)
 
 #

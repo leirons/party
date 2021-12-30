@@ -48,3 +48,9 @@ class UserToken(BaseModel):
         orm_mode = True
 
 
+class ChangeUserPassword(BaseModel):
+    password: str
+    new_password:str
+
+    class Config:
+        orm_mode = True

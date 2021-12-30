@@ -1,11 +1,9 @@
-from fastapi import APIRouter, Path
+from fastapi import APIRouter, Path, Depends, HTTPException, UploadFile, File
 
 from typing import Optional, List
 
-from fastapi import Depends, FastAPI, HTTPException
-
 from user import schemes, logic, models
-from core.db import SessionLocal, engine,get_db
+from core.db import SessionLocal, engine, get_db
 from user.logic import *
 
 from core.auth import AuthHandler
@@ -16,10 +14,7 @@ auth_handler = AuthHandler()
 router = APIRouter()
 
 
-
-
 # TODO - Добавить токены к каждому endpoint
-
 
 
 @router.post("/users/", response_model=schemes.User, tags=['User'])
@@ -37,13 +32,26 @@ def create_user(user: schemes.UserCreate, db: Session = Depends(get_db)):
     return logic.create_user(db=db, user=user, password=hashed_password)
 
 
+@router.post("/users/change_password{password}",tags=["User"])
+def change_login(user_scheme:schemes.ChangeUserPassword,db: Session = Depends(get_db),
+                 user=Depends(auth_handler.auth_wrapper)):
+
+    user_ = logic.get_user_by_id(user_id=user['sub'], db=db)
+
+    if user['sub'] == user_.id:
+        if auth_handler.verify_password(user_scheme.password,user_.hash_password):
+            logic.change_password(user_scheme.new_password, user, db)
+            return {"Operation":"Success"}
+        return HTTPException(status_code=401, detail="Password does not correct")
+    return {"Operation": "Error"}
+
 @router.get("/user/{user_id}", response_model=schemes.User, tags=["User"])
-def get_user(user_id: int = Path(...,title="Id of user"), db: Session = Depends(get_db)):
+def get_user(user_id: int = Path(..., title="Id of user"), db: Session = Depends(get_db)):
     """
     Function get user by id
     :param user_id:
     :param db:
-    :return:
+    :return:user
     """
     db_user = logic.get_user_by_id(db, user_id=user_id)
     if not db_user:
@@ -63,7 +71,7 @@ def login(user: schemes.UserToken, db: Session = Depends(get_db)):
     if not user_old.login == user.login:
         return HTTPException(status_code=400, detail="Does not correct login")
     if auth_handler.verify_password(user.password, user_old.hash_password):
-        token = auth_handler.encode_token(user_old.login, age=18)
+        token = auth_handler.encode_token(user_old.id, age=18)  # TODO
         return {"token": token}
 
 
@@ -79,7 +87,5 @@ def get_all_user(skip: int = 0, limit: int = 100, db=Depends(get_db)):
     return db_user
 
 
-@router.get("users/{name_of_party}",tags=["User"])
-def get_parties_of_user():
-    pass
+
 

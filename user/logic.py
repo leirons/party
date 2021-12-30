@@ -18,22 +18,31 @@ def get_user_by_email(db: Session, email: str):
 def get_user_by_login(db: Session, login: str):
     return db.query(models.User).filter(models.User.login == login).first()
 
+
 def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
 
 
-def create_user(password:str,db: Session,user: schemes.UserCreate):
-    db_user = models.User(email=user.email, hash_password=password,login=user.login)
+def create_user(password: str, db: Session, user: schemes.UserCreate):
+    db_user = models.User(email=user.email, hash_password=password, login=user.login)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     return db_user
 
 
+def change_password(password: str, user: models.User, db: Session):
+    from core.auth import AuthHandler
+    handler = AuthHandler()
+    hash_password = handler.get_passwords_hash(password)
+    user = get_user_by_id(user_id=user['sub'],db=db)
+    user.hash_password = hash_password
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
 
 
-def get_all_users(db:Session):
+def get_all_users(db: Session):
     db_user = db.query(models.User).all()
     return db_user
-
-
