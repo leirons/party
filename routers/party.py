@@ -25,7 +25,15 @@ async def party_all(db: Session = Depends(get_db)):
 
 
 @router.post(path='/party_delete/{name_of_party}', tags=["Party"], status_code=201)
-async def delete_party(party: schemes.PartyDelete, db: Session = Depends(get_db)):
+async def delete_party(party: schemes.PartyDelete, db: Session = Depends(get_db),user=Depends(auth.auth_wrapper)):
     if await logic.delete_party(party_name=party.name_of_party, db=db):
+        return {"Operation": "Success"}
+    return {"Operation": "Failed"}
+
+
+@router.post('/party_join/{id_of_party}', tags=['Party'])
+async def join_to_the_party(party_scheme: schemes.PartyParticipantsCreate, db: Session = Depends(get_db),
+                            user=Depends(auth.auth_wrapper)):
+    if await logic.join_to_the_party(id=party_scheme.party_id, db=db, owner_id=user['sub']):
         return {"Operation": "Success"}
     return {"Operation": "Failed"}

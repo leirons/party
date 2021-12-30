@@ -25,7 +25,7 @@ async def create_user(user: schemes.UserCreate, db: Session = Depends(get_db)):
     :param db:
     :return:
     """
-    db_user = logic.get_user_by_email(db=db, email=user.email)
+    db_user = await logic.get_user_by_email(db=db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     hashed_password = auth_handler.get_passwords_hash(user.password)
@@ -81,7 +81,7 @@ async def get_all_user(skip: int = 0, limit: int = 100, db=Depends(get_db)):
     Function gets all user from db
     :param db - Session of our database
     """
-    db_user = await     logic.get_users(db, skip=skip, limit=limit)
+    db_user = await logic.get_users(db, skip=skip, limit=limit)
     if not db_user:
         return HTTPException(status_code=404, detail="Users does not exists")
     return db_user
