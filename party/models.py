@@ -9,8 +9,13 @@ from core.db import Base
 class PartyParcipants(Base):
     __tablename__ = "party_owner"
     id = Column(Integer, index=True, primary_key=True)
+
     party_id = Column(Integer, ForeignKey("party.id"))
     party_parcipants = relationship("Party", back_populates="party")
+
+    owner_id = Column(Integer,ForeignKey('users.id'))
+    party_owner = relationship("User", back_populates='party_participants')
+
 
 
 class Party(Base):

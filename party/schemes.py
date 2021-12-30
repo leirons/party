@@ -6,8 +6,8 @@ class PartyShow(BaseModel):
     name_of_party: str
     longitude: int
     latitude: int
-    likes: str
-    dislikes: str
+    likes: int
+    dislikes: int
     owner_id:int
 
     class Config:
@@ -27,5 +27,11 @@ class PartyCreate(BaseModel):
 class PartyDelete(BaseModel):
     name_of_party: str
 
+    class Config:
+        orm_mode = True
+
+
+class PartyParticipantsCreate(BaseModel):
+    party_id: int
     class Config:
         orm_mode = True
