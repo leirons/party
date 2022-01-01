@@ -4,8 +4,6 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
 
-from .logger import logic
-
 SQLALCHEMY_DATABASE_URL = "sqlite:///./app.core.db"
 
 engine = create_engine(
@@ -29,8 +27,17 @@ def get_db() -> SessionLocal:
         db.close()
 
 
+
+# Todo Logging
 @event.listens_for(Engine, "before_execute")
 def my_before_execute(
         conn, clauseelement, multiparams, params, execution_options
 ):
     print("before execute!")
+
+@event.listens_for(Engine, "after_execute")
+def my_before_execute(
+        conn, clauseelement, multiparams, params, execution_options
+):
+    print("after execute!")
+
